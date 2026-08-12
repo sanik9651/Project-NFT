@@ -21,7 +21,12 @@ function App() {
     tg.expand()
     tg.enableClosingConfirmation()
 
-    const startParam = tg.initDataUnsafe?.start_parameter
+    const urlParams = new URLSearchParams(window.location.search)
+    const startParam = urlParams.get('tgWebAppStartParam') || tg.initDataUnsafe?.start_parameter
+
+    console.log('Start param:', startParam)
+    console.log('Full URL:', window.location.href)
+
     if (startParam) {
       setRecipientUserId(startParam)
     }

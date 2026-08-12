@@ -1,0 +1,150 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.welcome-box, .error-box, .empty-box {
+  background: var(--tg-theme-secondary-bg-color);
+  border-radius: 16px;
+  padding: 40px 20px;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.welcome-box h1 {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.welcome-box p, .empty-box p {
+  color: var(--tg-theme-hint-color);
+  margin-bottom: 24px;
+}
+
+.connect-btn {
+  background: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+  border: none;
+  border-radius: 12px;
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.connect-btn:active {
+  opacity: 0.7;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.disconnect-btn {
+  background: transparent;
+  color: var(--tg-theme-link-color);
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.disconnect-btn:active {
+  background: var(--tg-theme-secondary-bg-color);
+}
+
+.loader {
+  text-align: center;
+  padding: 40px;
+  color: var(--tg-theme-hint-color);
+  font-size: 16px;
+}
+
+.error-box {
+  background: #ff4444;
+  color: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.nft-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.nft-card {
+  background: var(--tg-theme-secondary-bg-color);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.nft-card:active {
+  transform: scale(0.98);
+}
+
+.nft-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: #e0e0e0;
+}
+
+.nft-info {
+  padding: 12px 16px;
+}
+
+.nft-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nft-collection {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transfer-btn {
+  width: 100%;
+  background: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+  border: none;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.transfer-btn:active:not(:disabled) {
+  opacity: 0.7;
+}
+
+.transfer-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(pip install *)",
+      "Bash(python3 -m venv venv)",
+      "Bash(npm run *)",
+      "Bash(git init *)",
+      "Bash(chmod +x *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'Initial commit: Telegram NFT Transfer Mini App *)",
+      "Bash(git config *)"
+    ]
+  }
+}

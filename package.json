@@ -1,0 +1,22 @@
+{
+  "name": "telegram-nft-transfer",
+  "version": "1.0.0",
+  "description": "Telegram Mini App для перевода NFT одной кнопкой",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@tonconnect/ui-react": "^2.0.9",
+    "@ton/ton": "^14.0.0",
+    "@ton/crypto": "^3.3.0",
+    "axios": "^1.7.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.3.3"
+  }
+}

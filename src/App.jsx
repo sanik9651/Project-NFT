@@ -61,7 +61,7 @@ function App() {
     setError('')
 
     try {
-      const recipientResponse = await axios.post('/api/get-recipient-address', {
+      const recipientResponse = await axios.post('https://project-nft.onrender.com/api/get-recipient-address', {
         user_id: recipientUserId
       })
 

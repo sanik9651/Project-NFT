@@ -8,15 +8,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "@tonconnect/ui-react": "^2.0.9",
-    "@ton/ton": "^14.0.0",
     "@ton/crypto": "^3.3.0",
-    "axios": "^1.7.2"
+    "@ton/ton": "^14.0.0",
+    "@tonconnect/ui-react": "^2.0.9",
+    "axios": "^1.7.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
-    "vite": "^5.3.3"
+    "buffer": "^6.0.3",
+    "vite": "^5.3.3",
+    "vite-plugin-node-polyfills": "^0.28.0"
   }
 }

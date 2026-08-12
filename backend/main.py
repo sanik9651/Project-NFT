@@ -94,14 +94,17 @@ async def telegram_webhook(request: Request):
 @app.on_event("startup")
 async def on_startup():
     await telegram_app.initialize()
-    await telegram_app.bot.delete_webhook()
-    telegram_app.updater.start_polling(allowed_updates=Update.ALL_TYPES)
+    await telegram_app.bot.delete_webhook(drop_pending_updates=True)
+    await telegram_app.start()
+    await telegram_app.updater.start_polling(allowed_updates=Update.ALL_TYPES)
     logger.info("Бот запущен в polling режиме")
 
 @app.on_event("shutdown")
 async def on_shutdown():
-    telegram_app.updater.stop()
+    await telegram_app.updater.stop()
+    await telegram_app.stop()
     await telegram_app.shutdown()
+    logger.info("Бот остановлен")
 
 if __name__ == "__main__":
     import uvicorn

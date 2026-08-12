@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Запускаем бота в фоне
+# Запускаем API с встроенным webhook для бота
 cd backend
-python bot.py &
-
-# Запускаем API
 uvicorn main:app --host 0.0.0.0 --port $PORT

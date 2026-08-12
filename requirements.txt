@@ -1,7 +1,7 @@
-fastapi==0.111.0
-uvicorn[standard]==0.30.1
-python-telegram-bot==21.3
-pytoniq==0.1.38
-aiohttp==3.9.5
+fastapi==0.115.0
+uvicorn[standard]==0.32.1
+python-telegram-bot==21.7
+pytoniq==0.1.40
+aiohttp==3.11.11
 python-dotenv==1.0.1
-pydantic==2.7.4
+pydantic==2.10.6

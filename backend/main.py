@@ -93,14 +93,14 @@ async def telegram_webhook(request: Request):
 
 @app.on_event("startup")
 async def on_startup():
-    webhook_url = f"{WEBHOOK_URL}/telegram-webhook/{BOT_TOKEN}"
     await telegram_app.initialize()
-    await telegram_app.bot.set_webhook(url=webhook_url)
-    logger.info(f"Webhook установлен: {webhook_url}")
+    await telegram_app.bot.delete_webhook()
+    telegram_app.updater.start_polling(allowed_updates=Update.ALL_TYPES)
+    logger.info("Бот запущен в polling режиме")
 
 @app.on_event("shutdown")
 async def on_shutdown():
-    await telegram_app.bot.delete_webhook()
+    telegram_app.updater.stop()
     await telegram_app.shutdown()
 
 if __name__ == "__main__":

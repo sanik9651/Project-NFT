@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
@@ -79,6 +80,115 @@ async def register_address(request: RegisterAddressRequest):
     user_addresses[str(request.user_id)] = request.address
     logger.info(f"Зарегистрирован адрес для пользователя {request.user_id}: {request.address}")
     return {"status": "ok"}
+
+@app.get("/share/{user_id}")
+async def share_nft_preview(user_id: str, request: Request):
+    """Генерирует HTML с Open Graph метатегами для красивого preview в Telegram"""
+
+    # URL на Mini App
+    mini_app_url = f"{MINI_APP_URL}?tgWebAppStartParam={user_id}"
+
+    # Дефолтная GIF анимация NFT (можно сделать динамической)
+    nft_image = "https://i.imgur.com/placeholder.gif"  # TODO: заменить на реальную
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Open Graph метатеги для Telegram -->
+        <meta property="og:title" content="🎁 Вам отправлен Telegram NFT" />
+        <meta property="og:description" content="Отправитель: Аккаунт скрыт" />
+        <meta property="og:image" content="{nft_image}" />
+        <meta property="og:image:width" content="500" />
+        <meta property="og:image:height" content="500" />
+        <meta property="og:type" content="website" />
+
+        <!-- Telegram WebApp метатеги -->
+        <meta name="telegram:card" content="summary_large_image" />
+
+        <title>NFT Transfer</title>
+
+        <style>
+            body {{
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                text-align: center;
+                padding: 20px;
+            }}
+
+            .container {{
+                max-width: 400px;
+            }}
+
+            .nft-image {{
+                width: 280px;
+                height: 280px;
+                border-radius: 20px;
+                margin-bottom: 30px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            }}
+
+            h1 {{
+                font-size: 28px;
+                margin-bottom: 10px;
+            }}
+
+            .sender {{
+                font-size: 16px;
+                opacity: 0.9;
+                margin-bottom: 30px;
+            }}
+
+            .claim-button {{
+                background: white;
+                color: #667eea;
+                border: none;
+                padding: 16px 48px;
+                font-size: 18px;
+                font-weight: 600;
+                border-radius: 12px;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-block;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                transition: transform 0.2s;
+            }}
+
+            .claim-button:hover {{
+                transform: scale(1.05);
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <img src="{nft_image}" alt="NFT" class="nft-image">
+            <h1>🎁 Вам отправлен Telegram NFT</h1>
+            <p class="sender">Отправитель: <strong>Аккаунт скрыт</strong></p>
+            <a href="{mini_app_url}" class="claim-button">Забрать</a>
+        </div>
+
+        <script>
+            // Автоматически открывать в Telegram WebApp если доступно
+            if (window.Telegram && window.Telegram.WebApp) {{
+                window.Telegram.WebApp.ready();
+                window.location.href = '{mini_app_url}';
+            }}
+        </script>
+    </body>
+    </html>
+    """
+
+    return HTMLResponse(content=html_content)
 
 @app.get("/api/health")
 async def health():

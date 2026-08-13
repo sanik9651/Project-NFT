@@ -24,7 +24,9 @@ function App() {
     tg.setBackgroundColor('#667eea')
 
     const urlParams = new URLSearchParams(window.location.search)
-    const startParam = urlParams.get('tgWebAppStartParam') || tg.initDataUnsafe?.start_parameter
+    const startParam = urlParams.get('tgWebAppStartParam') ||
+                       urlParams.get('startapp') ||
+                       tg.initDataUnsafe?.start_parameter
 
     if (startParam) {
       setRecipientUserId(startParam)

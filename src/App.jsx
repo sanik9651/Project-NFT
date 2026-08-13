@@ -164,7 +164,7 @@ function App() {
             className="nft-gif"
           />
         </div>
-        <h1>🎁 Telegram NFT</h1>
+        <h1>Lol Pop #130400</h1>
         <p className="sender-info">
           Отправитель: <strong>Аккаунт скрыт</strong>
         </p>

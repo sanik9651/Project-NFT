@@ -86,11 +86,16 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     # Используем InlineQueryResultGif чтобы показать GIF с текстом
+    # thumbnail должен быть JPEG, используем статичный кадр
+    thumbnail = "https://i.imgur.com/placeholder.jpg"
+
     results = [
         InlineQueryResultGif(
             id="nft_gift",
             gif_url=gif_url,
-            thumbnail_url=gif_url,
+            thumbnail_url=thumbnail,
+            gif_width=320,
+            gif_height=320,
             title="🎁 Отправить Telegram NFT",
             caption=f"Вам отправлен Telegram NFT: **{nft_name}**\n\nОт: **Аккаунт скрыт**",
             parse_mode='Markdown',

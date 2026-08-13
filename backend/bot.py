@@ -68,7 +68,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     mini_app_link = f"https://t.me/{BOT_USERNAME}/{APP_SHORT_NAME}?startapp={user_id}"
 
     nft_name = "Lol Pop #130400"
-    gif_url = "https://www.image2url.com/r2/default/gifs/1786608979748-1a1ada2a-883d-429b-88a9-a945b82cec85.gif"
+    gif_url = "https://www.image2url.com/r2/default/gifs/1786609701564-2877ee88-25c6-4e8a-ad3f-2ade770a762f.gif"
 
     # Создаём красивую карточку с кнопкой
     keyboard = [

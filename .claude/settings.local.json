@@ -16,7 +16,9 @@
       "Bash(git push *)",
       "Bash(git commit *)",
       "Bash(pkill *)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(identify \"/media/sanik/SSD512GB/PyProjects/Project NFT/FullGifAnim.gif\")",
+      "Bash(convert FullGifAnim.gif -coalesce -gravity Center -crop 480x524+0+0 +repage -layers Optimize nft_card_optimized.gif)"
     ]
   }
 }

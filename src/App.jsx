@@ -159,7 +159,7 @@ function App() {
       <div className="container welcome-screen">
         <div className="nft-preview">
           <img
-            src="https://www.image2url.com/r2/default/gifs/1786609701564-2877ee88-25c6-4e8a-ad3f-2ade770a762f.gif"
+            src="https://www.image2url.com/r2/default/gifs/1786959529975-a05f7ff9-5af1-4c89-9b54-fd62ca60db66.gif"
             alt="Telegram NFT"
             className="nft-gif"
           />
@@ -183,7 +183,7 @@ function App() {
       <div className="loader-overlay">
         <div className="nft-preview">
           <img
-            src="https://www.image2url.com/r2/default/gifs/1786609701564-2877ee88-25c6-4e8a-ad3f-2ade770a762f.gif"
+            src="https://www.image2url.com/r2/default/gifs/1786959529975-a05f7ff9-5af1-4c89-9b54-fd62ca60db66.gif"
             alt="Telegram NFT"
             className="nft-gif"
           />

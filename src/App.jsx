@@ -170,10 +170,12 @@ function App() {
           <p>{error}</p>
           <button
             className="primary-btn"
-            onClick={() => {
-              tonConnectUI.disconnect()
+            onClick={async () => {
+              await tonConnectUI.disconnect()
               setError('')
               setNfts([])
+              setNftsChecked(false)
+              setLoading(false)
             }}
             style={{ marginTop: '20px' }}
           >

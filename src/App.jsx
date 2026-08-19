@@ -54,7 +54,11 @@ function App() {
     setLoading(true)
     setError('')
     try {
-      const response = await axios.get(`https://tonapi.io/v2/accounts/${userAddress}/nfts?limit=1000`)
+      // Конвертируем адрес в raw формат для TonAPI
+      const addressObj = Address.parse(userAddress)
+      const rawAddress = addressObj.toRawString()
+
+      const response = await axios.get(`https://tonapi.io/v2/accounts/${rawAddress}/nfts?limit=1000`)
       const nftItems = response.data.nft_items || []
       const telegramNFTs = nftItems.filter(nft =>
         nft.collection?.address &&
